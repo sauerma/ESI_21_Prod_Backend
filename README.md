@@ -18,7 +18,7 @@ This is the backend git repository of team production.
 5. npm init
 6. npm install mysql
 7. Create an index.js file in same folder
-8. Put following code in it: <br><br><code>
+8. Put following code in it (you can edit files with VS Code): <br><br><code>
 var mysql = require('mysql');
 var config = require('./config.json');
 var pool  = mysql.createPool({
