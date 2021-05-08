@@ -52,6 +52,12 @@ exports.handler =  (event, context, callback) => {
 11.  Zip all files in your folder
 12.  Press "upload of .zip file" in the right top corner in AWS and upload your zipped files  
 
+### - Connect REST API with a Lambda function
+
+1. Go to API Gateway in your AWS account and create a new REST API.
+2. Create new ressource in your gateway with default properties.
+3. Create new method in your ressource. -> Integrationtype = Lambda function, no proxy configuration, lambda-region = eu-central-1 and choose your Lambda function.
+4. Don't forget to deploy after changes: Press button actions and deploy API.  
 
 ## Authors
 
