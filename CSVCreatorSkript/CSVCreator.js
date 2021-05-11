@@ -6,43 +6,44 @@
 // ];
 var csvFileData = [];
 
-function download_csv_file() {
+function download_csv_file() { 
 
-    // let targets = document.querySelectorAll("")
-    console.log(this)
-
-    let main = this.closest(".jss10")
-    console.log(main)
-
-    let targets = main.querySelectorAll("input[type=checkbox]").filter(":checked")
-    console.log(targets)
-
-    targets.forEach((elem) => {
-        let row = elem.closest(".MuiTableRow-root")
-        console.log(row)
-
-        let cols = row.getElementsByTagName("td") 
-
-        console.log(cols)
-    })
-
-    // //heading for each row of the data  
+    //heading for each row of the data  
     // var csv = 'Bestelldatum,BestellNr,ProduktionsNr,Menge,HexWert,Farbe,Bild\n';
+    var csv = 'Bestelldatum,BestellNr,ProduktionsNr,Menge,Status,HexWert,Farbe,Priorität,Bild\n';
 
-    // //merge the data with CSV  
-    // csvFileData.forEach(function(row) {
-    //     csv += row.join(',');
-    //     csv += "\n";
-    // });
+    //merge the data with CSV  
+    csvFileData.forEach(function(row) {
+        csv += row.join(',');
+        csv += "\n";
+    });
 
-    // //display the created CSV data on the web browser   
-    // document.write(csv);
+    //display the created CSV data on the web browser   
+    document.write(csv);
 
-    // var hiddenElement = document.createElement('a');
-    // hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-    // hiddenElement.target = '_blank';
+    var hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+    hiddenElement.target = '_blank';
 
-    // //name for the CSV file to be downloaded  
-    // hiddenElement.download = 'MachineConfiguration.csv';
-    // hiddenElement.click();
+    //name for the CSV file to be downloaded  
+    hiddenElement.download = 'MachineConfiguration.csv';
+    hiddenElement.click();
 }
+
+//    // let targets = document.querySelectorAll("")
+//    console.log(this)
+
+//    let main = this.closest(".jss10")
+//    console.log(main)
+
+//    let targets = main.querySelectorAll("input[type=checkbox]").filter(":checked")
+//    console.log(targets)
+
+//    targets.forEach((elem) => {
+//        let row = elem.closest(".MuiTableRow-root")
+//        console.log(row)
+
+//        let cols = row.getElementsByTagName("td") 
+
+//        console.log(cols)
+//    })
