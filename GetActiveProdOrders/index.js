@@ -74,7 +74,7 @@ async function callDB(client, queryMessage) {
 //-----------------------Functions----------------------//	
 
 const getSortedOrders = function () {
-  var queryMessage = "SELECT * from production.PLANNING_ORDERS where prod_status = 1;";
+  var queryMessage = "SELECT * from production.PLANNING_ORDERS where prod_status = 1 order by prod_prio;";
   return (queryMessage);
 };
 	
