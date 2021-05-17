@@ -6,8 +6,11 @@ var config = require('./config');
 
 //-------------------------Global variables-------------------------//
 
-var res;
 var results = [];
+var response = '';
+var emptyRes = 'undefined';
+var status = '';
+
 
 //-------------------------Database Connection-------------------------//
 const con = {
@@ -23,19 +26,26 @@ exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
 
   try {
+    
+    let data = JSON.stringify(event);
+    data = JSON.parse(data);
+    
+   if (typeof data !== 'undefined' && data.length > 0) {
 
-    //get all Customers
-    await callDB(pool, getSortedOrders());
-    results = res;
-    console.log(results);
+   await callDBupdateStatus(pool, updateProdStatus(data));
+   
+   status = "Status erfolgreich geupdated.";
 
     const response = {
       statusCode: 200,
-      body: results
+      body: status
     };
 
     console.log(response);
     return response;
+  }
+  
+  else {status = "Empty input data."; }
   }
   catch (error) {
     console.log(error);
@@ -49,33 +59,36 @@ exports.handler = async (event, context, callback) => {
   }
 };
 
+
 //-----------------------Helper----------------------//
 
-async function callDB(client, queryMessage) {
+async function callDBupdateStatus(client, queryMessage) {
 
-  var queryResult;
   await client.query(queryMessage)
     .then(
       (results) => {
-        queryResult = results[0];
-        return queryResult;
-      })
-    .then(
-      (results) => {
-        //queryResult = results[0];
-        console.log(JSON.parse(JSON.stringify(results)));
-        res = JSON.parse(JSON.stringify(results));
-        //console.log(res);
-        return results
+        console.log("Update Production Status" + results)
+        return results;
       })
     .catch(console.log)
-};
-
+}
+ 
 //-----------------------Functions----------------------//	
 
-const getSortedOrders = function () {
-  var queryMessage = "SELECT * from production.PLANNING_ORDERS where prod_status = 0 order by PROD_PRIO;";
- 
+
+const updateProdStatus = function (data) {
+  
+  var where = "where (O_NR = " + data[0]["O_NR"] + " and OI_NR = " + data[0]["OI_NR"] + " and PO_CODE = '" + data[0]["PO_CODE"] + "' and PO_COUNTER = " + data[0]["PO_COUNTER"] + ")";
+  
+if (data.length > 1) {
+
+ for (var i = 1; i < data.length; i++) {
+    where += " or (O_NR = " + data[i]["O_NR"] + " and OI_NR = " + data[i]["OI_NR"] + " and PO_CODE = '" + data[i]["PO_CODE"] + "' and PO_COUNTER = " + data[i]["PO_COUNTER"] + ")";
+ } 
+  }
+  
+  var queryMessage = "UPDATE production.PLANNING_ORDERS SET prod_status = 1 " + where + "";
+
   return (queryMessage);
-};
+}
 	
