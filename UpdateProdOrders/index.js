@@ -75,6 +75,22 @@ async function callDBupdateStatus(client, queryMessage) {
  
 //-----------------------Functions----------------------//	
 
+function getDateTime(){
+  
+  var now = new Date();
+  var onlyDate = now.toISOString().slice(0, 10);
+  var hh = ("0" + now.getHours()+3).slice(-2);
+  var mm = ("0" + now.getMinutes()).slice(-2);
+  var ss = ("0" + now.getSeconds()).slice(-2);
+  var time = "" + hh + ":" + mm + ":" + ss;
+  var dateTime = " "+ onlyDate + " " + time + "";
+  
+  console.log(dateTime);
+  
+  return dateTime;
+}
+
+
 
 const updateProdStatus = function (data) {
   
@@ -87,7 +103,8 @@ if (data.length > 1) {
  } 
   }
   
-  var queryMessage = "UPDATE production.PLANNING_ORDERS SET prod_status = 2 " + where + "";
+  var queryMessage = "UPDATE production.PLANNING_ORDERS SET end_date = '" + getDateTime() + "', prod_status = 2 " + where + "";
+  
 
   return (queryMessage);
 }
