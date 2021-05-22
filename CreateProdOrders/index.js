@@ -67,7 +67,7 @@ async function callDBupdateStatus(client, queryMessage) {
   await client.query(queryMessage)
     .then(
       (results) => {
-        console.log("Update Production Status" + results)
+        console.log("Insered Production Orders" + results)
         return results;
       })
     .catch(console.log)
@@ -91,5 +91,60 @@ async function callDBupdateStatus(client, queryMessage) {
 
 //   return (queryMessage);
 // }
-const createProdOrder = function (data) {}
+
+//Jenachdem wie die Daten reinkommen muss hier noch angepasst werden
+function convertHexToCMYK(hex){
+    var computedC = 0;
+    var computedM = 0;
+    var computedY = 0;
+    var computedK = 0;
+   
+    hex = (hex.charAt(0)=="#") ? hex.substring(1,7) : hex;
+   
+    if (hex.length != 6) {
+     console.log('ungültige Hexcode länge');   
+     return; 
+    }
+    if (/[0-9a-f]{6}/i.test(hex) != true) {
+     console.log('ungültige Zeichen im Hexcode');
+     return; 
+    }
+   
+    var r = parseInt(hex.substring(0,2),16); 
+    var g = parseInt(hex.substring(2,4),16); 
+    var b = parseInt(hex.substring(4,6),16); 
+   
+    // Ausnahme Schwarz
+    if (r==0 && g==0 && b==0) {
+     computedK = 1;
+     return [0,0,0,1];
+    }
+   
+    computedC = 1 - (r/255);
+    computedM = 1 - (g/255);
+    computedY = 1 - (b/255);
+   
+    var minCMY = Math.min(computedC,Math.min(computedM,computedY));
+   
+    computedC = (computedC - minCMY) / (1 - minCMY) ;
+    computedM = (computedM - minCMY) / (1 - minCMY) ;
+    computedY = (computedY - minCMY) / (1 - minCMY) ;
+    computedK = minCMY;
+   
+    return [computedC,computedM,computedY,computedK];   
+}
+//Test
+convertHexToCMYK("#ABDFA1");
+
+//WIP
+const createProdOrder = function (data) {
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES "(data[i]["O_NR"], data[i]["OI_NR"], data[i]["PO_CODE"], data[i]["PO_COUNTER"], data[i]["CUSTOMER_TYPE"], data[i]["QUANTITY"], data[i]["PROD_STATUS"], data[i]["MAT_NR"], data[i]["C"], data[i]["M"], data[i]["Y"], data[i]["K"], data[i]["HEXCOLOR"], data[i]["PROD_PRIO"], data[i]["IMAGE"],data[i]["O_DATE"]);
+  // INSERT INTO `production`.`PLANNING_ORDERS` (`O_NR`, `OI_NR`, `PO_CODE`, `PO_COUNTER`, `CUSTOMER_TYPE`, `QUANTITY`, `PROD_STATUS`, `MAT_NR`, `C`, `M`, `Y`, `K`, `HEXCOLOR`, `PROD_PRIO`, `IMAGE`, ) VALUES ('102', '123', 'N', '99', 'P', '99', '0', '123', '5', '6', '4', '9', '#965212', '1', '/images/shirt123.png');
+
+
+  return (queryMessage);
+}
 	
+
+//Testedatensatz
+
