@@ -32,14 +32,14 @@ exports.handler = async (event, context, callback) => {
     
    if (typeof data !== 'undefined' && data.length > 0) {
 
-   await callDBupdateStatus(pool, createProdOrder(data));
+   await callDBinsertOrder(pool, createProdOrder(data));
    
-   status = "Status erfolgreich geupdated.";
+  //  status = "Status erfolgreich geupdated.";
 
-    const response = {
-      statusCode: 200,
-      body: status
-    };
+  //   const response = {
+  //     statusCode: 200,
+  //     body: status
+  //   };
 
     console.log(response);
     return response;
@@ -62,8 +62,8 @@ exports.handler = async (event, context, callback) => {
 
 //-----------------------Helper----------------------//
 
-async function callDBupdateStatus(client, queryMessage) {
-
+async function callDBinsertOrder(client, queryMessage) {
+  
   await client.query(queryMessage)
     .then(
       (results) => {
@@ -84,7 +84,9 @@ data.HEXCOLOR = "#123456";
 data.CUSTOMER_TYPE = "P";
 data.QUANTITY = 20;
 data.IMAGE = "Image.jpg";
-data.O_DATE = "2021-05-23 13:21:43";
+// data.O_DATE = "2021-05-23 13:21:43";
+data.O_DATE = new Date(2021, 05, 21, 0, 0, 0, 0);
+
 //--------------------------------------------------//
 
 function convertHexToCMYK(hexvalue){
@@ -157,9 +159,9 @@ function declarePrioOfOrder(data){
 
   //WIP: Wie kommt das Date von V&V bei uns an? 
   //if O_date alt verringere Prio 
-  if(data.O_DATE != getDateTime()){
+  if(Math.abs(data.O_DATE - getDateTime() > 172800000)){
     if(prio > 1){      
-      console.log("Prio wird um eins hochgesetzt da Auftrag schon 2 Tage liegt");
+      console.log("Prio wird um eins hochgesetzt da Auftrag schon 48h liegt");
       prio = prio-1;      
     }
   }
