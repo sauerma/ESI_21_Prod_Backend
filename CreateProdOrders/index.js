@@ -75,44 +75,38 @@ async function callDBupdateStatus(client, queryMessage) {
  
 //-----------------------Functions----------------------//	
 
+//----------------Testdatensatz-----------------------// Delete Later
+var data = {};
+data.O_NR = 123456;
+data.PO_CODE = "N";
+data.OI_NR = 1;
+data.HEXCOLOR = "#123456";
+data.CUSTOMER_TYPE = "P";
+data.QUANTITY = 20;
+data.IMAGE = "Image.jpg";
+data.O_DATE = "2021-05-23 13:21:43";
+//--------------------------------------------------//
 
-// const updateProdStatus = function (data) {
-  
-//   var where = "where (O_NR = " + data[0]["O_NR"] + " and OI_NR = " + data[0]["OI_NR"] + " and PO_CODE = '" + data[0]["PO_CODE"] + "' and PO_COUNTER = " + data[0]["PO_COUNTER"] + ")";
-  
-// if (data.length > 1) {
-
-//  for (var i = 1; i < data.length; i++) {
-//     where += " or (O_NR = " + data[i]["O_NR"] + " and OI_NR = " + data[i]["OI_NR"] + " and PO_CODE = '" + data[i]["PO_CODE"] + "' and PO_COUNTER = " + data[i]["PO_COUNTER"] + ")";
-//  } 
-//   }
-  
-//   var queryMessage = "UPDATE production.PLANNING_ORDERS SET prod_status = 2 " + where + "";
-
-//   return (queryMessage);
-// }
-
-//Jenachdem wie die Daten reinkommen muss hier noch angepasst werden
-function convertHexToCMYK(hex){
+function convertHexToCMYK(hexvalue){
     var computedC = 0;
     var computedM = 0;
     var computedY = 0;
     var computedK = 0;
    
-    hex = (hex.charAt(0)=="#") ? hex.substring(1,7) : hex;
+    hexvalue = (hexvalue.charAt(0)=="#") ? hexvalue.substring(1,7) : hexvalue;
    
-    if (hex.length != 6) {
+    if (hexvalue.length != 6) {
      console.log('ungültige Hexcode länge');   
      return; 
     }
-    if (/[0-9a-f]{6}/i.test(hex) != true) {
+    if (/[0-9a-f]{6}/i.test(hexvalue) != true) {
      console.log('ungültige Zeichen im Hexcode');
      return; 
     }
    
-    var r = parseInt(hex.substring(0,2),16); 
-    var g = parseInt(hex.substring(2,4),16); 
-    var b = parseInt(hex.substring(4,6),16); 
+    var r = parseInt(hexvalue.substring(0,2),16); 
+    var g = parseInt(hexvalue.substring(2,4),16); 
+    var b = parseInt(hexvalue.substring(4,6),16); 
    
     // Ausnahme Schwarz
     if (r==0 && g==0 && b==0) {
@@ -130,13 +124,65 @@ function convertHexToCMYK(hex){
     computedM = (computedM - minCMY) / (1 - minCMY) ;
     computedY = (computedY - minCMY) / (1 - minCMY) ;
     computedK = minCMY;
-   
-    return [computedC,computedM,computedY,computedK];   
-}
-//Test
-convertHexToCMYK("#ABDFA1");
 
-//WIP
+    //set or Insert C M Y K Values für data hier!
+   console.log(computedC);
+   console.log(computedM);
+   console.log(computedY);
+   console.log(computedK);
+}
+//------------------------Method Test---------------// Delete Later
+convertHexToCMYK(data.HEXCOLOR);
+//--------------------------------------------------//
+
+function declarePrioOfOrder(data){
+  let prio;
+
+  if(data.PO_CODE == "P"){
+    console.log("Prio 4");
+    prio = 4;
+  }
+  if(data.CUSTOMER_TYPE == "B"){
+    console.log("Prio 3");
+    prio = 3;
+  }
+  if(data.CUSTOMER_TYPE == "P"){
+    console.log("Prio 2");
+    prio = 2;
+  }  
+  if(data.PO_CODE == "R"|| data.PO_CODE =="Q"){
+    console.log("Prio 1");
+    prio = 1;
+  }
+
+  //WIP: Wie kommt das Date von V&V bei uns an? 
+  //if O_date alt verringere Prio 
+  if(data.O_DATE != getDateTime()){
+    if(prio > 1){      
+      console.log("Prio wird um eins hochgesetzt da Auftrag schon 2 Tage liegt");
+      prio = prio-1;      
+    }
+  }
+  console.log("Prio nach Berechnung = "+prio);
+}
+//------------------------Method Test---------------// Delete Later
+declarePrioOfOrder(data);
+//--------------------------------------------------//
+
+function getDateTime(){
+ 
+  var now = new Date();
+  var onlyDate = now.toISOString().slice(0, 10);
+  var hh = ("0" + ((now.getHours())+2)).slice(-2);
+  var mm = ("0" + now.getMinutes()).slice(-2);
+  var ss = ("0" + now.getSeconds()).slice(-2);
+  var time = "" + hh + ":" + mm + ":" + ss;
+  var dateTime = " "+ onlyDate + " " + time + "";
+  
+  return dateTime;
+}
+
+//WIP INSERT INTO DB
 const createProdOrder = function (data) {
   var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES "(data[i]["O_NR"], data[i]["OI_NR"], data[i]["PO_CODE"], data[i]["PO_COUNTER"], data[i]["CUSTOMER_TYPE"], data[i]["QUANTITY"], data[i]["PROD_STATUS"], data[i]["MAT_NR"], data[i]["C"], data[i]["M"], data[i]["Y"], data[i]["K"], data[i]["HEXCOLOR"], data[i]["PROD_PRIO"], data[i]["IMAGE"],data[i]["O_DATE"]);
   // INSERT INTO `production`.`PLANNING_ORDERS` (`O_NR`, `OI_NR`, `PO_CODE`, `PO_COUNTER`, `CUSTOMER_TYPE`, `QUANTITY`, `PROD_STATUS`, `MAT_NR`, `C`, `M`, `Y`, `K`, `HEXCOLOR`, `PROD_PRIO`, `IMAGE`, ) VALUES ('102', '123', 'N', '99', 'P', '99', '0', '123', '5', '6', '4', '9', '#965212', '1', '/images/shirt123.png');
@@ -144,7 +190,4 @@ const createProdOrder = function (data) {
 
   return (queryMessage);
 }
-	
-
-//Testedatensatz
 
