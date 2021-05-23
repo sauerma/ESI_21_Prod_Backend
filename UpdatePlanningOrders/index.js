@@ -2,7 +2,7 @@
 
 const mysql = require('mysql2/promise');
 var config = require('./config');
-
+const axios = require('axios');
 
 //-------------------------Global variables-------------------------//
 
@@ -32,7 +32,9 @@ exports.handler = async (event, context, callback) => {
     
    if (typeof data !== 'undefined' && data.length > 0) {
 
-   await callDBupdateStatus(pool, updateProdStatus(data));
+   await callDBupdateStatus(pool, updateProdStatus(data)); //Update Status intern
+  
+   await updateVuVStatus(data); //Update Status Verkauf & Versand
    
    status = "Status erfolgreich geupdated.";
 
@@ -68,7 +70,7 @@ async function callDBupdateStatus(client, queryMessage) {
     .then(
       (results) => {
         console.log("Update Production Status" + results)
-        return results;
+        return results; 
       })
     .catch(console.log)
 }
@@ -92,3 +94,18 @@ if (data.length > 1) {
   return (queryMessage);
 }
 	
+async function updateVuVStatus(data) {
+  
+  if (data.length === 0 || data === undefined) return; 
+  console.log("Sale Update:", data);
+
+  axios.put('https://hfmbwiwpid.execute-api.eu-central-1.amazonaws.com/sales/orders/orderitems?status=3', data)
+    .then((res) => {
+      console.log(res.data);
+      return data
+    })
+    .catch(error => {
+      console.log(error);
+    }) 
+}
+ 	
