@@ -27,14 +27,13 @@ exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
 
   try {
-    
     let data = JSON.stringify(event);
     data = JSON.parse(data);
-    
+
    if (typeof data !== 'undefined' && data.length > 0) {
+  
 
    await callDBinsertOrder(pool, createProdOrder(data));
-   
    status = "Order erfolgreich erstellt";
 
     const response = {
@@ -60,7 +59,6 @@ exports.handler = async (event, context, callback) => {
   }
 };
 
-
 //-----------------------Helper----------------------//
 
 async function callDBinsertOrder(client, queryMessage) {
@@ -75,20 +73,6 @@ async function callDBinsertOrder(client, queryMessage) {
 }
  
 //-----------------------Functions----------------------//	
-
-//----------------Testdatensatz-----------------------// Delete Later
-var data = {};
-data.O_NR = 123456;
-data.PO_CODE = "N";
-data.OI_NR = 1;
-data.HEXCOLOR = "#123456";
-data.CUSTOMER_TYPE = "P";
-data.QUANTITY = 20;
-data.IMAGE = "Image.jpg";
-// data.O_DATE = "2021-05-23 13:21:43";
-data.O_DATE = new Date(2021, 05, 21, 0, 0, 0, 0);
-
-//--------------------------------------------------//
 
 function convertHexToCMYK(hexvalue){
     var computedC = 0;
@@ -128,50 +112,36 @@ function convertHexToCMYK(hexvalue){
     computedY = (computedY - minCMY) / (1 - minCMY) ;
     computedK = minCMY;
 
-    //set or Insert C M Y K Values für data hier!
     order.C = computedC;
-    order.M = computedC;
-    order.Y = computedC;
-    order.K = computedC;
+    order.M = computedM;
+    order.Y = computedY;
+    order.K = computedK;
 }
-//------------------------Method Test---------------// Delete Later
-convertHexToCMYK(data.HEXCOLOR);
-//--------------------------------------------------//
 
 function declarePrioOfOrder(data){
   let prio;
 
-  if(data.PO_CODE == "P"){
-    // console.log("Prio 4");
+  if(data["PO_CODE"] == "P"){
     prio = 4;
   }
-  if(data.CUSTOMER_TYPE == "B"){
-    // console.log("Prio 3");
+  if(data["CUSTOMER_TYPE"] == "B"){
     prio = 3;
   }
-  if(data.CUSTOMER_TYPE == "P"){
-    // console.log("Prio 2");
+  if(data["CUSTOMER_TYPE"] == "P"){
     prio = 2;
   }  
-  if(data.PO_CODE == "R"|| data.PO_CODE =="Q"){
-    // console.log("Prio 1");
+  if(data["PO_CODE"] == "R"|| data["PO_CODE"] =="Q"){
     prio = 1;
   }
 
-  //WIP: Wie kommt das Date von V&V bei uns an? 
-  //if O_date alt verringere Prio 
-  if(Math.abs(data.O_DATE - getDateTime() > 172800000)){
+  if(Math.abs(data["O_DATE"] - getDateTime() > 172800000)){
     if(prio > 1){      
       // console.log("Prio wird um eins hochgesetzt da Auftrag schon 48h liegt");
       prio = prio-1;      
     }
   }
-  console.log("Prio nach Berechnung = "+prio);
   order.PROD_PRIO = prio;
 }
-//------------------------Method Test---------------// Delete Later
-declarePrioOfOrder(data);
-//--------------------------------------------------//
 
 function getDateTime(){
  
@@ -186,10 +156,12 @@ function getDateTime(){
   return dateTime;
 }
 
-//WIP INSERT INTO DB
 const createProdOrder = function (data) {
-  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES "(data[i]["O_NR"], data[i]["OI_NR"], data[i]["PO_CODE"], data[i]["PO_COUNTER"], data[i]["CUSTOMER_TYPE"], data[i]["QUANTITY"], 0, 0, order.C, order.M,order.Y, order.K, data[i]["HEXCOLOR"], order.PROD_PRIO, data[i]["IMAGE"],data[i]["O_DATE"]);
-  // INSERT INTO `production`.`PLANNING_ORDERS` (`O_NR`, `OI_NR`, `PO_CODE`, `PO_COUNTER`, `CUSTOMER_TYPE`, `QUANTITY`, `PROD_STATUS`, `MAT_NR`, `C`, `M`, `Y`, `K`, `HEXCOLOR`, `PROD_PRIO`, `IMAGE`, ) VALUES ('102', '123', 'N', '99', 'P', '99', '0', '123', '5', '6', '4', '9', '#965212', '1', '/images/shirt123.png');
+  declarePrioOfOrder(data[0]);
+  convertHexToCMYK(data[0]["HEXCOLOR"]);
+
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+order.C+ "," +order.M+ "," +order.Y+ ","+ order.K+ ",'"+data[0]["HEXCOLOR"]+"'," +order.PROD_PRIO+ ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"')";
+
   return (queryMessage);
 }
 
