@@ -35,7 +35,7 @@ exports.handler = async (event, context, callback) => {
 
    await callDBupdateStatus(pool, updateProdStatus(data)); //Update Status intern
    
-   await updateVuVStatus(data); //Update Status Verkauf & Versand
+   //await updateVuVStatus(data); //Update Status Verkauf & Versand
    
    status = "Status erfolgreich geupdated.";
 
@@ -111,7 +111,7 @@ if (data.length > 1) {
 }
 
 	
-async function updateVuVStatus(data) {
+/*async function updateVuVStatus(data) {
   
   if (data.length === 0 || data === undefined) return; 
   console.log("Sale Update:", data);
@@ -119,10 +119,11 @@ async function updateVuVStatus(data) {
   axios.put('https://hfmbwiwpid.execute-api.eu-central-1.amazonaws.com/sales/orders/orderitems?status=4', data)
     .then((res) => {
       console.log(res.data);
+      console.log("hello1");
       return data
     })
     .catch(error => {
       console.log(error);
+            console.log("ERRRORRRR");
     }) 
-}
- 
+} */

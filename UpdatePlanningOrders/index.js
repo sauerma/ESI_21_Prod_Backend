@@ -3,7 +3,7 @@
 const mysql = require('mysql2/promise');
 var config = require('./config');
 const axios = require('axios');
-
+ 
 //-------------------------Global variables-------------------------//
 
 var results = [];
@@ -34,7 +34,7 @@ exports.handler = async (event, context, callback) => {
 
    await callDBupdateStatus(pool, updateProdStatus(data)); //Update Status intern
   
-   await updateVuVStatus(data); //Update Status Verkauf & Versand
+   //await updateVuVStatus(data); //Update Status Verkauf & Versand
    
    status = "Status erfolgreich geupdated.";
 
@@ -94,7 +94,7 @@ if (data.length > 1) {
   return (queryMessage);
 }
 	
-async function updateVuVStatus(data) {
+ /* async function updateVuVStatus(data) {
   
   if (data.length === 0 || data === undefined) return; 
   console.log("Sale Update:", data);
@@ -107,5 +107,5 @@ async function updateVuVStatus(data) {
     .catch(error => {
       console.log(error);
     }) 
-}
+} */
  	
