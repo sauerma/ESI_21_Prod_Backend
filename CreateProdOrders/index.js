@@ -10,6 +10,7 @@ var results = [];
 var response = '';
 var emptyRes = 'undefined';
 var status = '';
+var order = {};
 
 
 //-------------------------Database Connection-------------------------//
@@ -34,12 +35,12 @@ exports.handler = async (event, context, callback) => {
 
    await callDBinsertOrder(pool, createProdOrder(data));
    
-  //  status = "Status erfolgreich geupdated.";
+   status = "Order erfolgreich erstellt";
 
-  //   const response = {
-  //     statusCode: 200,
-  //     body: status
-  //   };
+    const response = {
+      statusCode: 200,
+      body: status
+    };
 
     console.log(response);
     return response;
@@ -128,10 +129,10 @@ function convertHexToCMYK(hexvalue){
     computedK = minCMY;
 
     //set or Insert C M Y K Values für data hier!
-   console.log(computedC);
-   console.log(computedM);
-   console.log(computedY);
-   console.log(computedK);
+    order.C = computedC;
+    order.M = computedC;
+    order.Y = computedC;
+    order.K = computedC;
 }
 //------------------------Method Test---------------// Delete Later
 convertHexToCMYK(data.HEXCOLOR);
@@ -141,19 +142,19 @@ function declarePrioOfOrder(data){
   let prio;
 
   if(data.PO_CODE == "P"){
-    console.log("Prio 4");
+    // console.log("Prio 4");
     prio = 4;
   }
   if(data.CUSTOMER_TYPE == "B"){
-    console.log("Prio 3");
+    // console.log("Prio 3");
     prio = 3;
   }
   if(data.CUSTOMER_TYPE == "P"){
-    console.log("Prio 2");
+    // console.log("Prio 2");
     prio = 2;
   }  
   if(data.PO_CODE == "R"|| data.PO_CODE =="Q"){
-    console.log("Prio 1");
+    // console.log("Prio 1");
     prio = 1;
   }
 
@@ -161,11 +162,12 @@ function declarePrioOfOrder(data){
   //if O_date alt verringere Prio 
   if(Math.abs(data.O_DATE - getDateTime() > 172800000)){
     if(prio > 1){      
-      console.log("Prio wird um eins hochgesetzt da Auftrag schon 48h liegt");
+      // console.log("Prio wird um eins hochgesetzt da Auftrag schon 48h liegt");
       prio = prio-1;      
     }
   }
   console.log("Prio nach Berechnung = "+prio);
+  order.PROD_PRIO = prio;
 }
 //------------------------Method Test---------------// Delete Later
 declarePrioOfOrder(data);
@@ -186,10 +188,8 @@ function getDateTime(){
 
 //WIP INSERT INTO DB
 const createProdOrder = function (data) {
-  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES "(data[i]["O_NR"], data[i]["OI_NR"], data[i]["PO_CODE"], data[i]["PO_COUNTER"], data[i]["CUSTOMER_TYPE"], data[i]["QUANTITY"], data[i]["PROD_STATUS"], data[i]["MAT_NR"], data[i]["C"], data[i]["M"], data[i]["Y"], data[i]["K"], data[i]["HEXCOLOR"], data[i]["PROD_PRIO"], data[i]["IMAGE"],data[i]["O_DATE"]);
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES "(data[i]["O_NR"], data[i]["OI_NR"], data[i]["PO_CODE"], data[i]["PO_COUNTER"], data[i]["CUSTOMER_TYPE"], data[i]["QUANTITY"], 0, 0, order.C, order.M,order.Y, order.K, data[i]["HEXCOLOR"], order.PROD_PRIO, data[i]["IMAGE"],data[i]["O_DATE"]);
   // INSERT INTO `production`.`PLANNING_ORDERS` (`O_NR`, `OI_NR`, `PO_CODE`, `PO_COUNTER`, `CUSTOMER_TYPE`, `QUANTITY`, `PROD_STATUS`, `MAT_NR`, `C`, `M`, `Y`, `K`, `HEXCOLOR`, `PROD_PRIO`, `IMAGE`, ) VALUES ('102', '123', 'N', '99', 'P', '99', '0', '123', '5', '6', '4', '9', '#965212', '1', '/images/shirt123.png');
-
-
   return (queryMessage);
 }
 
