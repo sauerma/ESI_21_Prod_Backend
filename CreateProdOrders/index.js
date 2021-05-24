@@ -10,7 +10,9 @@ var results = [];
 var response = '';
 var emptyRes = 'undefined';
 var status = '';
-var order = {};
+var order =  {};
+var newProdNum = 0;
+var res;
 
 
 //-------------------------Database Connection-------------------------//
@@ -32,7 +34,11 @@ exports.handler = async (event, context, callback) => {
 
    if (typeof data !== 'undefined' && data.length > 0) {
   
-
+   
+   await callDB(pool, getNewProdNr(data));
+   newProdNum = res[0]["p_nr"];
+   console.log("Neue Prod Nr:",newProdNum);
+   
    await callDBinsertOrder(pool, createProdOrder(data));
    status = "Order erfolgreich erstellt";
 
@@ -71,6 +77,26 @@ async function callDBinsertOrder(client, queryMessage) {
       })
     .catch(console.log)
 }
+
+async function callDB(client, queryMessage) {
+
+  var queryResult;
+  await client.query(queryMessage)
+    .then(
+      (results) => {
+        queryResult = results[0];
+        return queryResult;
+      })
+    .then(
+      (results) => {
+        //queryResult = results[0];
+        console.log(JSON.parse(JSON.stringify(results)));
+        res = JSON.parse(JSON.stringify(results));
+        //console.log(res);
+        return results
+      })
+    .catch(console.log) 
+};
  
 //-----------------------Functions----------------------//	
 
@@ -156,12 +182,21 @@ function getDateTime(){
   return dateTime;
 }
 
+
+const getNewProdNr = function(data){
+  
+  var queryMessage = "SELECT MAX( p_nr ) + 1 as p_nr FROM production.PLANNING_ORDERS";
+  
+  return (queryMessage);
+}
+
+
 const createProdOrder = function (data) {
   declarePrioOfOrder(data[0]);
   convertHexToCMYK(data[0]["HEXCOLOR"]);
-
-  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+order.C+ "," +order.M+ "," +order.Y+ ","+ order.K+ ",'"+data[0]["HEXCOLOR"]+"'," +order.PROD_PRIO+ ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"')";
-
+  
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+order.C+ "," +order.M+ "," +order.Y+ ","+ order.K+ ",'"+data[0]["HEXCOLOR"]+"'," +order.PROD_PRIO+ ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"'," +newProdNum+")";
+  
   return (queryMessage);
 }
 
