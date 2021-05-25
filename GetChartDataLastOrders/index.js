@@ -25,9 +25,10 @@ exports.handler = async (event, context, callback) => {
   try {
 
     //get all Customers
-    await callDB(pool, getSortedOrders());
+    await callDB(pool, getDataOfLastMonth());
     results = res;
-    console.log(results);
+
+    console.log("Data:", results);
 
     const response = {
       statusCode: 200,
@@ -73,8 +74,9 @@ async function callDB(client, queryMessage) {
 
 //-----------------------Functions----------------------//	
 
-const getSortedOrders = function () {
-  var queryMessage = "SELECT po1.O_NR, po1.OI_NR, po1.PO_CODE, po1.PO_COUNTER, (select date_format(O_date, '%m.%d.%Y %H:%i') from production.PLANNING_ORDERS po2 where po2.o_nr = po1.o_nr and po2.oi_nr = po1.oi_nr and po2.po_code = po1.po_code and po2.po_counter = po1.po_counter) AS O_DATE, REPLACE (REPLACE(po1.CUSTOMER_TYPE, 'P', 'Privatkunde'), 'B', 'Businesskunde') as CUSTOMER_TYPE, po1.QUANTITY, REPLACE(REPLACE(REPLACE(REPLACE(po1.PROD_STATUS, '0', 'In Planung'), '1', 'In Produktion'), '2', 'Produziert'), '3', 'Ausgelagert') as PROD_STATUS, po1.MAT_NR, po1.C, po1.M, po1.Y, po1.K, po1.HEXCOLOR, po1.PROD_PRIO, po1.IMAGE, (select date_format(END_DATE, '%m.%d.%Y %H:%i') from production.PLANNING_ORDERS po3 where po3.o_nr = po1.o_nr and po3.oi_nr = po1.oi_nr and po3.po_code = po1.po_code and po3.po_counter = po1.po_counter) AS END_DATE, po1.p_nr FROM production.PLANNING_ORDERS po1 where prod_status = 1 order by prod_prio;";
+const getDataOfLastMonth = function () {
+  //Quantities of last month per day  
+  var queryMessage = "SELECT DATE_FORMAT(END_DATE, '%d.%m.%Y') AS date, SUM(Quantity) AS quantity FROM production.PLANNING_ORDERS WHERE prod_status = 2 AND END_DATE < SYSDATE() AND END_DATE > DATE_SUB(SYSDATE(), INTERVAL 1 MONTH) Group by DATE_FORMAT(END_DATE, '%d.%m.%Y') ORDER BY END_DATE;";
+
   return (queryMessage);
 };
-	
