@@ -35,7 +35,6 @@ exports.handler = async (event, context, callback) => {
 
    await callDBupdateStatus(pool, updateProdStatus(data)); //Update Status intern
    
-   //await updateVuVStatus(data); //Update Status Verkauf & Versand
    
    status = "Status erfolgreich geupdated.";
 
@@ -104,26 +103,9 @@ if (data.length > 1) {
   }
   
   console.log(getDateTime())
-  var queryMessage = "UPDATE production.PLANNING_ORDERS SET end_date = '" + getDateTime() + "', prod_status = 2 " + where + "";
+  var queryMessage = "UPDATE production.PLANNING_ORDERS SET end_date = '" + getDateTime() + "', prod_status = 3 " + where + "";
   
 
   return (queryMessage);
 }
 
-	
-/*async function updateVuVStatus(data) {
-  
-  if (data.length === 0 || data === undefined) return; 
-  console.log("Sale Update:", data);
-
-  axios.put('https://hfmbwiwpid.execute-api.eu-central-1.amazonaws.com/sales/orders/orderitems?status=4', data)
-    .then((res) => {
-      console.log(res.data);
-      console.log("hello1");
-      return data
-    })
-    .catch(error => {
-      console.log(error);
-            console.log("ERRRORRRR");
-    }) 
-} */
