@@ -76,7 +76,7 @@ async function callDB(client, queryMessage) {
 
 const getDataOfLastMonth = function () {
   //Quantities of last month per day  
-  var queryMessage = "SELECT DATE_FORMAT(END_DATE, '%d.%m.%Y') AS date, SUM(Quantity) AS quantity FROM production.PLANNING_ORDERS WHERE prod_status = 2 AND DATE_FORMAT(END_DATE, '%d.%m.%Y') <= DATE_FORMAT(SYSDATE(), '%d.%m.%Y') AND END_DATE > DATE_SUB(SYSDATE(), INTERVAL 1 MONTH) GROUP BY DATE_FORMAT(END_DATE, '%d.%m.%Y') ORDER BY END_DATE;";
+  var queryMessage = "SELECT DATE_FORMAT(END_DATE, '%d.%m.%Y') AS date, SUM(Quantity) AS quantity FROM production.PLANNING_ORDERS WHERE prod_status = 3 AND DATE_FORMAT(END_DATE, '%d.%m.%Y') <= DATE_FORMAT(SYSDATE(), '%d.%m.%Y') AND END_DATE > DATE_SUB(SYSDATE(), INTERVAL 1 MONTH) GROUP BY DATE_FORMAT(END_DATE, '%d.%m.%Y') ORDER BY END_DATE;";
 
   return (queryMessage);
 };
