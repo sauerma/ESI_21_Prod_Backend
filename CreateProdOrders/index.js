@@ -133,10 +133,14 @@ function convertHexToCMYK(hexvalue){
    
     var minCMY = Math.min(computedC,Math.min(computedM,computedY));
    
-    order.C = (computedC - minCMY) / (1 - minCMY) ;
-    order.M = (computedM - minCMY) / (1 - minCMY) ;
-    order.Y = (computedY - minCMY) / (1 - minCMY) ;
-    order.K = minCMY;
+    computedC = (computedC - minCMY) / (1 - minCMY) ;
+    computedM = (computedM - minCMY) / (1 - minCMY) ;
+    computedY = (computedY - minCMY) / (1 - minCMY) ;
+    computedK = minCMY;
+
+    var obj = {"C": computedC, "M": computedM, "Y": computedY, "K": computedK};
+    return obj;
+    
 }
 
 function declarePrioOfOrder(data){
@@ -161,7 +165,7 @@ function declarePrioOfOrder(data){
       prio = prio-1;      
     }
   }
-  order.PROD_PRIO = prio;
+  return prio;
 }
 
 function getDateTime(){ 
@@ -179,7 +183,7 @@ function getDateTime(){
 function deltaEBerechnen(hexvalue){
   var culori = require("culori")
   let colorValues = culori.lab(hexvalue);
-  order.l = parseFloat(colorValues.l);
+  return parseFloat(colorValues.l);
 }
 
 const getNewProdNr = function(data){  
@@ -187,14 +191,21 @@ const getNewProdNr = function(data){
   return (queryMessage);
 }
 
-
 const createProdOrder = function (data) {
-  declarePrioOfOrder(data[0]);
-  convertHexToCMYK(data[0]["HEXCOLOR"]);
-  deltaEBerechnen(data[0]["HEXCOLOR"]);
-  
-  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, DELTA_E, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+order.C+ "," +order.M+ "," +order.Y+ "," +order.K+ ","+ order.l+ ",'"+data[0]["HEXCOLOR"]+"'," +order.PROD_PRIO+ ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"'," +newProdNum+")";
-  
+
+  var cmyk = convertHexToCMYK(data[0]["HEXCOLOR"]);
+
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, DELTA_E, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+ cmyk["C"]+ "," + cmyk["M"]+ "," + cmyk["Y"]+ "," + cmyk["K"]+ ","+ deltaEBerechnen(data[0]["HEXCOLOR"]) + ",'"+data[0]["HEXCOLOR"]+"'," + declarePrioOfOrder(data[0]) + ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"'," +newProdNum+")";
+
+
+  for (var i = 1; i < data.length; i++){
+
+    var cmyk = convertHexToCMYK(data[i]["HEXCOLOR"]);
+    
+    queryMessage += ", ( " + data[i]["O_NR"] +","+ data[i]["OI_NR"]+",'" + data[i]["PO_CODE"]+ "',"+data[i]["PO_COUNTER"]+", '"+ data[i]["CUSTOMER_TYPE"]+"',"+ data[i]["QUANTITY"]+", 0, 0,"+ cmyk["C"] + "," + cmyk["M"] + "," + cmyk["Y"] + "," + cmyk["K"] + ","+ deltaEBerechnen(data[i]["HEXCOLOR"]) + ",'"+data[i]["HEXCOLOR"]+"'," +  declarePrioOfOrder(data[i]) + ",'"+data[i]["IMAGE"]+"','"+data[i]["O_DATE"]+"'," + (newProdNum + i)+")";
+
+  }
+  console.log(queryMessage);
   return (queryMessage);
 }
 
