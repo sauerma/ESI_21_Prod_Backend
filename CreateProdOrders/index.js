@@ -133,15 +133,10 @@ function convertHexToCMYK(hexvalue){
    
     var minCMY = Math.min(computedC,Math.min(computedM,computedY));
    
-    computedC = (computedC - minCMY) / (1 - minCMY) ;
-    computedM = (computedM - minCMY) / (1 - minCMY) ;
-    computedY = (computedY - minCMY) / (1 - minCMY) ;
-    computedK = minCMY;
-
-    order.C = computedC;
-    order.M = computedM;
-    order.Y = computedY;
-    order.K = computedK;
+    order.C = (computedC - minCMY) / (1 - minCMY) ;
+    order.M = (computedM - minCMY) / (1 - minCMY) ;
+    order.Y = (computedY - minCMY) / (1 - minCMY) ;
+    order.K = minCMY;
 }
 
 function declarePrioOfOrder(data){
@@ -169,8 +164,7 @@ function declarePrioOfOrder(data){
   order.PROD_PRIO = prio;
 }
 
-function getDateTime(){
- 
+function getDateTime(){ 
   var now = new Date();
   var onlyDate = now.toISOString().slice(0, 10);
   var hh = ("0" + ((now.getHours())+2)).slice(-2);
@@ -182,11 +176,14 @@ function getDateTime(){
   return dateTime;
 }
 
+function deltaEBerechnen(hexvalue){
+  var culori = require("culori")
+  let colorValues = culori.lab(hexvalue);
+  order.l = parseFloat(colorValues.l);
+}
 
-const getNewProdNr = function(data){
-  
-  var queryMessage = "SELECT MAX( p_nr ) + 1 as p_nr FROM production.PLANNING_ORDERS";
-  
+const getNewProdNr = function(data){  
+  var queryMessage = "SELECT MAX( p_nr ) + 1 as p_nr FROM production.PLANNING_ORDERS";  
   return (queryMessage);
 }
 
@@ -194,8 +191,9 @@ const getNewProdNr = function(data){
 const createProdOrder = function (data) {
   declarePrioOfOrder(data[0]);
   convertHexToCMYK(data[0]["HEXCOLOR"]);
+  deltaEBerechnen(data[0]["HEXCOLOR"]);
   
-  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+order.C+ "," +order.M+ "," +order.Y+ ","+ order.K+ ",'"+data[0]["HEXCOLOR"]+"'," +order.PROD_PRIO+ ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"'," +newProdNum+")";
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, DELTA_E, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] +","+ data[0]["OI_NR"]+",'" + data[0]["PO_CODE"]+ "',"+data[0]["PO_COUNTER"]+", '"+ data[0]["CUSTOMER_TYPE"]+"',"+ data[0]["QUANTITY"]+", 0, 0,"+order.C+ "," +order.M+ "," +order.Y+ "," +order.K+ ","+ order.l+ ",'"+data[0]["HEXCOLOR"]+"'," +order.PROD_PRIO+ ",'"+data[0]["IMAGE"]+"','"+data[0]["O_DATE"]+"'," +newProdNum+")";
   
   return (queryMessage);
 }
