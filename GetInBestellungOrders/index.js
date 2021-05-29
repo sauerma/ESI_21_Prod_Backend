@@ -25,7 +25,7 @@ exports.handler = async (event, context, callback) => {
   try {
 
     //get all Customers
-    await callDB(pool, getSortedOrders());
+    await callDB(pool, getInBestellungOrders());
     results = res;
     console.log(results);
 
@@ -73,8 +73,8 @@ async function callDB(client, queryMessage) {
 
 //-----------------------Functions----------------------//	
 
-const getSortedOrders = function () {
-  var queryMessage = "SELECT * FROM production.MATERIAL_PROD where status = 0;";
+const getInBestellungOrders = function () {
+  var queryMessage = "SELECT prodmat_id, replace(m_id_materialstype, 'T', 'Shirt') as m_id_materialstype, quantity, ppml, whitness, viscosity, absorbency, chargen_nr, RES_QTY, hexcolor, delta_e, status FROM production.MATERIAL_PROD where status = 0;";
  
   return (queryMessage);
 };
