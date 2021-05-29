@@ -25,7 +25,7 @@ exports.handler = async (event, context, callback) => {
   try {
 
     //get all Customers
-    await callDB(pool, getMaterialShirts());
+    await callDB(pool, getMaterialColors());
     results = res;
     console.log(results);
 
@@ -73,7 +73,7 @@ async function callDB(client, queryMessage) {
 
 //-----------------------Functions----------------------//	
 
-const getMaterialShirts = function () {
+const getMaterialColors = function () {
   var queryMessage = "SELECT * FROM production.MATERIAL_PROD where m_id_materialstype != 'T' and status = 1;";
  
   return (queryMessage);
