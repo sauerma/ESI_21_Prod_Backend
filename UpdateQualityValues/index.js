@@ -33,7 +33,8 @@ exports.handler = async (event, context, callback) => {
    if (typeof data !== 'undefined' && data.length > 0) {
 
    await callDBupdateStatus(pool, updateStatus(data)); //Update Status intern
-   
+   await callDBupdateStatus(pool, updateValues(data));
+
    status = "Status Material erfolgreich geupdated.";
 
     const response = {
@@ -84,11 +85,22 @@ const updateStatus = function (data) {
     } 
   }
   
-  var queryMessage = "UPDATE production.MATERIAL_PROD SET status = 1 " + where + "";
+  var queryMessage = "UPDATE production.MATERIAL_PROD SET status = 1 WHERE " + where + "";
   console.log("queryMessage "+queryMessage);
 
   return (queryMessage);
 }
 
+function updateValues(data){
 
- 	
+  var queryMessage = "INSERT INTO production.MATERIAL_PROD (prodmat_id,chargen_nr,whitness,ppml,absorbency,viscosity,delta_e) VALUES ("+ data[0]["prodmat_id"]+","+ data[0]["chargen_nr"] +","+ data[0]["whiteness"] +","+ data[0]["ppml"] +","+ data[0]["absorbency"] +","+ data[0]["viscosity"] +","+ data[0]["delta_e"] +")";
+  
+  if (data.length > 1) {
+    for (var i = 1; i < data.length; i++) {
+      queryMessage += ",("+ data[i]["prodmat_id"]+","+data[i]["chargen_nr"] +","+ data[i]["whiteness"] +","+ data[i]["ppml"] +","+ data[i]["absorbency"] +","+ data[i]["viscosity"] +","+ data[i]["delta_e"] +")"; 
+    } 
+  }
+  queryMessage += "ON DUPLICATE KEY UPDATE prodmat_id = VALUES (prodmat_id), chargen_nr = VALUES (chargen_nr),whitness = VALUES (whitness),ppml = VALUES (ppml),absorbency = VALUES (absorbency),viscosity = VALUES (viscosity),delta_e = VALUES (delta_e)";
+
+  return (queryMessage);
+}
