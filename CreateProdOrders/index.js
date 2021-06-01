@@ -200,6 +200,13 @@ const createProdOrder = function (data) {
 
   for (var i = 1; i < data.length; i++){
 
+    if(data[i]["IMAGE"] === "undefined" || data[i]["IMAGE"] === null || data[i]["IMAGE"] === undefined){
+      data[i]["IMAGE"] = "";
+    }
+    if(data[i]["CUSTOMER_TYPE"] === "undefined" || data[i]["CUSTOMER_TYPE"] === null || data[i]["CUSTOMER_TYPE"] === undefined){
+      data[i]["CUSTOMER_TYPE"] = "";
+    }
+
     var cmyk = convertHexToCMYK(data[i]["HEXCOLOR"]);
     
     queryMessage += ", ( " + data[i]["O_NR"] +","+ data[i]["OI_NR"]+",'" + data[i]["PO_CODE"]+ "',"+data[i]["PO_COUNTER"]+", '"+ data[i]["CUSTOMER_TYPE"]+"',"+ data[i]["QUANTITY"]+", 0, 0,"+ cmyk["C"] + "," + cmyk["M"] + "," + cmyk["Y"] + "," + cmyk["K"] + ","+ deltaEBerechnen(data[i]["HEXCOLOR"]) + ",'"+data[i]["HEXCOLOR"]+"'," +  declarePrioOfOrder(data[i]) + ",'"+data[i]["IMAGE"]+"','"+data[i]["O_DATE"]+"'," + (newProdNum + i)+")";
