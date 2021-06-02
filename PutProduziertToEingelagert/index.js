@@ -34,7 +34,7 @@ exports.handler = async (event, context, callback) => {
 
    await callDBupdateStatus(pool, updateProdStatus(data)); //Update Status intern auf 4
 
-   status = "Status Material erfolgreich geupdated.";
+   status = "Status erfolgreich auf 4 geupdated.";
 
     const response = {
       statusCode: 200,
