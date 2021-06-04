@@ -5,7 +5,7 @@ This is the backend git repository of team production.
 
 ## Demo
 
-*Demo Gif*
+![](https://github.com/sauerma/ESI_21_Prod_Backend/blob/main/Production.gif)
 
 
 ## Get started
