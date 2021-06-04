@@ -76,7 +76,7 @@ async function callDB(client, queryMessage) {
 
 const getAuslastung= function () {
 
-  var queryMessage = "SELECT Round(((SUM(Quantity) / 350) * 100), 2) AS auslastung FROM production.PLANNING_ORDERS WHERE prod_status = 1 or prod_status = 2 ORDER BY END_DATE;";
+  var queryMessage = "SELECT Round(((SUM(Quantity) / 350) * 100), 2) AS auslastung FROM production.PLANNING_ORDERS WHERE prod_status = 1;";
 
   return (queryMessage);
 };

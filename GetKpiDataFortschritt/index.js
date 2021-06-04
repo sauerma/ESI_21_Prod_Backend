@@ -76,6 +76,6 @@ async function callDB(client, queryMessage) {
 
 const getFortschritt= function () {
 
-  var queryMessage = "SELECT ROUND((sub.produced / (sub.producing + sub.produced)) * 100, 2) AS fortschritt FROM (SELECT SUM(QUANTITY) AS producing, (SELECT SUM(QUANTITY) FROM production.PLANNING_ORDERS WHERE PROD_STATUS = 3 AND DATE(END_DATE) = DATE(SYSDATE())) AS produced FROM production.PLANNING_ORDERS WHERE PROD_STATUS = 1 or prod_status = 2) AS sub;";
+  var queryMessage = "SELECT ROUND((sub.produced / (sub.producing + sub.produced)) * 100, 2) AS fortschritt FROM (SELECT SUM(QUANTITY) AS producing, (SELECT SUM(QUANTITY) FROM production.PLANNING_ORDERS WHERE (PROD_STATUS = 3 or PROD_STATUS = 4) AND DATE(END_DATE) = DATE(SYSDATE())) AS produced FROM production.PLANNING_ORDERS WHERE PROD_STATUS = 1 OR prod_status = 2) AS sub;";
   return (queryMessage);
 };

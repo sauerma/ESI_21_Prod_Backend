@@ -76,7 +76,7 @@ async function callDB(client, queryMessage) {
 
 const getPrivatkundenAnteil= function () {
 
-  var queryMessage = "select round((sub.private / (sub.private + sub.business))*100, 2) as privatkunden from ( SELECT count(CUSTOMER_TYPE) as business, (SELECT count(CUSTOMER_TYPE) from production.PLANNING_ORDERS WHERE CUSTOMER_TYPE='P') as private FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'B' ) as sub;";
+  var queryMessage = "SELECT ROUND((sub.private / (sub.private + sub.business)) * 100, 2) AS privatkunden FROM (SELECT COUNT(CUSTOMER_TYPE) AS business, (SELECT COUNT(CUSTOMER_TYPE) FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'P'and (prod_status = 1 OR prod_status = 2)) AS private FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'B' AND (prod_status = 1 OR prod_status = 2)) AS sub;";
 
   return (queryMessage);
 };
