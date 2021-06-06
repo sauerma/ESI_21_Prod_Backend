@@ -1,15 +1,20 @@
-//-------------------------IMPORTS-------------------------//
+/*------------------------------------------------------------------*/
+// Autor: ESI SoSe21 - Team production members
+// Julia Jillich, David Krieg, Evgeniya Puchkova, Max Sauer
+// Contact: jjilich@stud.hs-offenburg.de, dkrieg@stud.hs-offenburg.de,
+//          epuchkova@stud.hs-offenburg.de, www.maxsauer.com
+// File: Lambda GetKPIDataPrivatkunden
+/*------------------------------------------------------------------*/
 
+//-------------------------IMPORTS----------------------------------//
 const mysql = require('mysql2/promise');
 var config = require('./config');
 
-
 //-------------------------Global variables-------------------------//
-
 var res;
 var results = [];
 
-//-------------------------Database Connection-------------------------//
+//-------------------------Database Connection----------------------//
 const con = {
   host: config.host,
   user: config.user,
@@ -18,16 +23,11 @@ const con = {
 };
 
 //-------------------------Handler-------------------------//
-
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
-
-    //get all Customers
     await callDB(pool, getPrivatkundenAnteil());
     results = res;
-
     console.log("Data:", results);
 
     const response = {
@@ -51,9 +51,7 @@ exports.handler = async (event, context, callback) => {
 };
 
 //-----------------------Helper----------------------//
-
 async function callDB(client, queryMessage) {
-
   var queryResult;
   await client.query(queryMessage)
     .then(
@@ -73,10 +71,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//	
-
-const getPrivatkundenAnteil= function () {
-
+const getPrivatkundenAnteil = function () {
   var queryMessage = "SELECT ROUND((sub.private / (sub.private + sub.business)) * 100, 2) AS privatkunden FROM (SELECT COUNT(CUSTOMER_TYPE) AS business, (SELECT COUNT(CUSTOMER_TYPE) FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'P'and (prod_status = 1 OR prod_status = 2)) AS private FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'B' AND (prod_status = 1 OR prod_status = 2)) AS sub;";
-
   return (queryMessage);
 };

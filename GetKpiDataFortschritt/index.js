@@ -1,15 +1,20 @@
-//-------------------------IMPORTS-------------------------//
+/*------------------------------------------------------------------*/
+// Autor: ESI SoSe21 - Team production members
+// Julia Jillich, David Krieg, Evgeniya Puchkova, Max Sauer
+// Contact: jjilich@stud.hs-offenburg.de, dkrieg@stud.hs-offenburg.de,
+//          epuchkova@stud.hs-offenburg.de, www.maxsauer.com
+// File: Lambda GetKPIDataFortschritt
+/*------------------------------------------------------------------*/
 
+//-------------------------IMPORTS----------------------------------//
 const mysql = require('mysql2/promise');
 var config = require('./config');
 
-
 //-------------------------Global variables-------------------------//
-
 var res;
 var results = [];
 
-//-------------------------Database Connection-------------------------//
+//-------------------------Database Connection----------------------//
 const con = {
   host: config.host,
   user: config.user,
@@ -18,16 +23,11 @@ const con = {
 };
 
 //-------------------------Handler-------------------------//
-
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
-
-    //get all Customers
     await callDB(pool, getFortschritt());
     results = res;
-
     console.log("Data:", results);
 
     const response = {
@@ -51,9 +51,7 @@ exports.handler = async (event, context, callback) => {
 };
 
 //-----------------------Helper----------------------//
-
 async function callDB(client, queryMessage) {
-
   var queryResult;
   await client.query(queryMessage)
     .then(
@@ -73,9 +71,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//	
-
-const getFortschritt= function () {
-
+const getFortschritt = function () {
   var queryMessage = "SELECT ROUND((sub.produced / (sub.producing + sub.produced)) * 100, 2) AS fortschritt FROM (SELECT SUM(QUANTITY) AS producing, (SELECT SUM(QUANTITY) FROM production.PLANNING_ORDERS WHERE (PROD_STATUS = 3 or PROD_STATUS = 4) AND DATE(END_DATE) = DATE(SYSDATE())) AS produced FROM production.PLANNING_ORDERS WHERE PROD_STATUS = 1 OR prod_status = 2) AS sub;";
   return (queryMessage);
 };

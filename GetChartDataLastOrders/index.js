@@ -1,15 +1,20 @@
-//-------------------------IMPORTS-------------------------//
+/*-----------------------------------------------------------------------*/
+// Autor: ESI SoSe21 - Team production members
+// Julia Jillich, David Krieg, Evgeniya Puchkova, Max Sauer
+// Contact: jjilich@stud.hs-offenburg.de, dkrieg@stud.hs-offenburg.de,
+//          epuchkova@stud.hs-offenburg.de, www.maxsauer.com
+// File: Lambda GetChartDataLastOrders
+/*-----------------------------------------------------------------------*/
 
+//-------------------------IMPORTS----------------------------------//
 const mysql = require('mysql2/promise');
 var config = require('./config');
 
-
 //-------------------------Global variables-------------------------//
-
 var res;
 var results = [];
 
-//-------------------------Database Connection-------------------------//
+//-------------------------Database Connection----------------------//
 const con = {
   host: config.host,
   user: config.user,
@@ -17,17 +22,12 @@ const con = {
   port: config.port
 };
 
-//-------------------------Handler-------------------------//
-
+//-------------------------Handler----------------------------------//
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
-
-    //get all Customers
     await callDB(pool, getDataOfLastMonth());
     results = res;
-
     console.log("Data:", results);
 
     const response = {
@@ -51,9 +51,7 @@ exports.handler = async (event, context, callback) => {
 };
 
 //-----------------------Helper----------------------//
-
 async function callDB(client, queryMessage) {
-
   var queryResult;
   await client.query(queryMessage)
     .then(
@@ -72,11 +70,9 @@ async function callDB(client, queryMessage) {
     .catch(console.log)
 };
 
-//-----------------------Functions----------------------//	
-
+//-----------------------Functions----------------------//
+//Quantities of last month per day  
 const getDataOfLastMonth = function () {
-  //Quantities of last month per day  
   var queryMessage = "SELECT DATE_FORMAT(END_DATE, '%d.%m.%Y') AS date, SUM(Quantity) AS quantity FROM production.PLANNING_ORDERS WHERE (prod_status = 3 or prod_status = 4 ) AND END_DATE < SYSDATE() AND END_DATE > DATE_SUB(SYSDATE(), INTERVAL 1 MONTH) GROUP BY DATE_FORMAT(END_DATE, '%d.%m.%Y') ORDER BY END_DATE;";
-
   return (queryMessage);
 };

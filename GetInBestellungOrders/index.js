@@ -1,15 +1,20 @@
-//-------------------------IMPORTS-------------------------//
+/*--------------------------------------------------------------------*/
+// Autor: ESI SoSe21 - Team production members
+// Julia Jillich, David Krieg, Evgeniya Puchkova, Max Sauer
+// Contact: jjilich@stud.hs-offenburg.de, dkrieg@stud.hs-offenburg.de,
+//          epuchkova@stud.hs-offenburg.de, www.maxsauer.com
+// File: Lambda GetInBestellungOrders
+/*--------------------------------------------------------------------*/
 
+//-------------------------IMPORTS----------------------------------//
 const mysql = require('mysql2/promise');
 var config = require('./config');
 
-
 //-------------------------Global variables-------------------------//
-
 var res;
 var results = [];
 
-//-------------------------Database Connection-------------------------//
+//-------------------------Database Connection----------------------//
 const con = {
   host: config.host,
   user: config.user,
@@ -18,13 +23,9 @@ const con = {
 };
 
 //-------------------------Handler-------------------------//
-
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
-
-    //get all Customers
     await callDB(pool, getInBestellungOrders());
     results = res;
     console.log(results);
@@ -50,9 +51,7 @@ exports.handler = async (event, context, callback) => {
 };
 
 //-----------------------Helper----------------------//
-
 async function callDB(client, queryMessage) {
-
   var queryResult;
   await client.query(queryMessage)
     .then(
@@ -68,14 +67,11 @@ async function callDB(client, queryMessage) {
         //console.log(res);
         return results
       })
-    .catch(console.log) 
+    .catch(console.log)
 };
 
-//-----------------------Functions----------------------//	
-
+//-----------------------Functions----------------------//
 const getInBestellungOrders = function () {
   var queryMessage = "SELECT prodmat_id, m_id_materialstype, quantity, ppml, whitness, viscosity, absorbency, chargen_nr, RES_QTY, hexcolor, delta_e, status FROM production.MATERIAL_PROD where status = 0;";
- 
   return (queryMessage);
 };
-	
