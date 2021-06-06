@@ -69,6 +69,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//	
+// Create Querymessage for the calculation of the key figure utilization
 const getAuslastung = function () {
   var queryMessage = "SELECT Round(((SUM(Quantity) / 350) * 100), 2) AS auslastung FROM production.PLANNING_ORDERS WHERE prod_status = 1;";
   return (queryMessage);

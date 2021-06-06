@@ -69,6 +69,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//
+// Create Querymessage to get material color
 const getMaterialColors = function () {
   var queryMessage = "SELECT * FROM production.MATERIAL_PROD where m_id_materialstype != 'T' and status = 1 and RES_QTY != 0;";
   return (queryMessage);

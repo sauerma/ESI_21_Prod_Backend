@@ -69,6 +69,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//	
+// Create Querymessage to get all production orders 
 const getSortedOrders = function () {
   var queryMessage = "SELECT po1.O_NR, po1.OI_NR, po1.PO_CODE, po1.PO_COUNTER, (select date_format(O_date, '%d.%m.%Y %H:%i') from production.PLANNING_ORDERS po2 where po2.o_nr = po1.o_nr and po2.oi_nr = po1.oi_nr and po2.po_code = po1.po_code and po2.po_counter = po1.po_counter) AS O_DATE, REPLACE (REPLACE(po1.CUSTOMER_TYPE, 'P', 'Privatkunde'), 'B', 'Businesskunde') as CUSTOMER_TYPE, po1.QUANTITY, REPLACE(REPLACE(REPLACE(REPLACE(po1.PROD_STATUS, '0', 'In Planung'), '1', 'In Färbung'), '2', 'In Druck'), '3', 'Ausgelagert') as PROD_STATUS, po1.MAT_NR, po1.C, po1.M, po1.Y, po1.K, po1.HEXCOLOR, po1.PROD_PRIO, po1.IMAGE, po1.DELTA_E, REPLACE((select date_format(END_DATE, '%d.%m.%Y %H:%i') from production.PLANNING_ORDERS po3 where po3.o_nr = po1.o_nr and po3.oi_nr = po1.oi_nr and po3.po_code = po1.po_code and po3.po_counter = po1.po_counter), '00.00.0000 00:00', '' ) AS END_DATE, po1.p_nr FROM production.PLANNING_ORDERS po1 where  prod_status = 2 or prod_status = 3 order by prod_prio;";
   return (queryMessage);

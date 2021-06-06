@@ -69,6 +69,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//	
+// Create Querymessage for the calculation of the key figure retail share
 const getPrivatkundenAnteil = function () {
   var queryMessage = "SELECT ROUND((sub.private / (sub.private + sub.business)) * 100, 2) AS privatkunden FROM (SELECT COUNT(CUSTOMER_TYPE) AS business, (SELECT COUNT(CUSTOMER_TYPE) FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'P'and (prod_status = 1 OR prod_status = 2)) AS private FROM production.PLANNING_ORDERS WHERE CUSTOMER_TYPE = 'B' AND (prod_status = 1 OR prod_status = 2)) AS sub;";
   return (queryMessage);

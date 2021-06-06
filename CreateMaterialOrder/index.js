@@ -61,7 +61,6 @@ exports.handler = async (event, context, callback) => {
 
 //-----------------------Helper----------------------//
 async function callDBinsertOrder(client, queryMessage) {
-
   await client.query(queryMessage)
     .then(
       (results) => {

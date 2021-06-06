@@ -69,6 +69,7 @@ async function callDB(client, queryMessage) {
 };
 
 //-----------------------Functions----------------------//
+// Create Querymessage to get Orders for Machine 
 const getInBestellungOrders = function () {
   var queryMessage = "SELECT prodmat_id, m_id_materialstype, quantity, ppml, whitness, viscosity, absorbency, chargen_nr, RES_QTY, hexcolor, delta_e, status FROM production.MATERIAL_PROD where status = 0;";
   return (queryMessage);
