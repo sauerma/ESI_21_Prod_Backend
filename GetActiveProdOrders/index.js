@@ -62,10 +62,8 @@ async function callDB(client, queryMessage) {
       })
     .then(
       (results) => {
-        //queryResult = results[0];
         console.log(JSON.parse(JSON.stringify(results)));
         res = JSON.parse(JSON.stringify(results));
-        //console.log(res);
         return results
       })
     .catch(console.log)
