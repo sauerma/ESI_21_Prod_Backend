@@ -25,7 +25,6 @@ const con = {
 //-------------------------Handler----------------------------------//
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
     await callDB(pool, getActiveProdOrders());
     results = res;

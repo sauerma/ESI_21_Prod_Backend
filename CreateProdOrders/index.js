@@ -30,7 +30,6 @@ const con = {
 //-------------------------Handler-----------------------------------//
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
     let data = JSON.stringify(event);
     data = JSON.parse(data);
@@ -152,7 +151,6 @@ function declarePrioOfOrder(data) {
   if (data["PO_CODE"] == "R" || data["PO_CODE"] == "Q") {
     prio = 1;
   }
-
   if (Math.abs(data["O_DATE"] - getDateTime() > 172800000)) {
     if (prio > 1) {
       // console.log("Prio wird um eins hochgesetzt da Auftrag schon 48h liegt");

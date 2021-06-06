@@ -30,7 +30,6 @@ const con = {
 //-------------------------Handler-------------------------//
 exports.handler = async (event, context, callback) => {
   const pool = await mysql.createPool(con);
-
   try {
     let data = JSON.stringify(event);
     data = JSON.parse(data);
@@ -82,4 +81,3 @@ const createMaterialOrder = function (data) {
   }
   return (queryMessage);
 }
-
