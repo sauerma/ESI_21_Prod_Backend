@@ -69,6 +69,7 @@ async function callDBupdateStatus(client, queryMessage) {
 }
 
 //-----------------------Functions----------------------//
+// Create a query that updates all remaining quantities
 const updateResMenge = function (data) {
   var queryMessage = "UPDATE production.MATERIAL_PROD SET RES_QTY = " + data[0]["RES_QTY"] + " where prodmat_id = " + data[0]["prodmat_id"] + "";
   return (queryMessage);

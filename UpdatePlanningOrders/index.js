@@ -68,7 +68,8 @@ async function callDBupdateStatus(client, queryMessage) {
     .catch(console.log)
 }
 
-//-----------------------Functions----------------------//	
+//-----------------------Functions----------------------//
+// Create a query that updates the status of orders 	
 const updateProdStatus = function (data) {
   var where = "where (O_NR = " + data[0]["O_NR"] + " and OI_NR = " + data[0]["OI_NR"] + " and PO_CODE = '" + data[0]["PO_CODE"] + "' and PO_COUNTER = " + data[0]["PO_COUNTER"] + ")";
 

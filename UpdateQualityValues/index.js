@@ -70,6 +70,7 @@ async function callDBupdateStatus(client, queryMessage) {
 }
 
 //-----------------------Functions----------------------//
+// Create a query that updates the status of orders 
 const updateStatus = function (data) {
   var where = "prodmat_id = " + data[0]["prodmat_id"];
 
@@ -82,6 +83,7 @@ const updateStatus = function (data) {
   return (queryMessage);
 }
 
+// Create a query that updates all quality characteristics
 function updateValues(data) {
   var queryMessage = "INSERT INTO production.MATERIAL_PROD (prodmat_id,chargen_nr,whitness,ppml,absorbency,viscosity,delta_e) VALUES (" + data[0]["prodmat_id"] + "," + data[0]["chargen_nr"] + "," + data[0]["whiteness"] + "," + data[0]["ppml"] + "," + data[0]["absorbency"] + "," + data[0]["viscosity"] + "," + data[0]["delta_e"] + ")";
 
