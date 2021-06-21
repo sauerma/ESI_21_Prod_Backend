@@ -189,7 +189,7 @@ const getNewProdNr = function (data) {
 // Create Querymessage to Insert incoming Order from V&V
 const createProdOrder = function (data) {
   var cmyk = convertHexToCMYK(data[0]["HEXCOLOR"]);
-  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, DELTA_E, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] + "," + data[0]["OI_NR"] + ",'" + data[0]["PO_CODE"] + "'," + data[0]["PO_COUNTER"] + ", '" + data[0]["CUSTOMER_TYPE"] + "'," + data[0]["QUANTITY"] + ", 0, 0," + cmyk["C"] + "," + cmyk["M"] + "," + cmyk["Y"] + "," + cmyk["K"] + "," + deltaEBerechnen(data[0]["HEXCOLOR"]) + ",'" + data[0]["HEXCOLOR"] + "'," + declarePrioOfOrder(data[0]) + ",'" + data[0]["IMAGE"] + "','" + data[0]["O_DATE"] + "'," + newProdNum + ")";
+  var queryMessage = "INSERT INTO production.PLANNING_ORDERS (O_NR, OI_NR, PO_CODE, PO_COUNTER, CUSTOMER_TYPE, QUANTITY, PROD_STATUS, MAT_NR, C, M, Y, K, DELTA_E, HEXCOLOR, PROD_PRIO, IMAGE,O_DATE, p_nr) VALUES ( " + data[0]["O_NR"] + "," + data[0]["OI_NR"] + ",'" + data[0]["PO_CODE"] + "'," + data[0]["PO_COUNTER"] + ", '" + data[0]["CUSTOMER_TYPE"] + "'," + data[0]["QUANTITY"] + ", 0, 0," + cmyk["C"] + "," + cmyk["M"] + "," + cmyk["Y"] + "," + cmyk["K"] + "," + deltaEBerechnen(data[0]["HEXCOLOR"]) + ",'" + data[0]["HEXCOLOR"].toLowerCase() + "'," + declarePrioOfOrder(data[0]) + ",'" + data[0]["IMAGE"] + "','" + data[0]["O_DATE"] + "'," + newProdNum + ")";
 
   for (var i = 1; i < data.length; i++) {
     if (data[i]["IMAGE"] === "undefined" || data[i]["IMAGE"] === null || data[i]["IMAGE"] === undefined) {
@@ -200,7 +200,7 @@ const createProdOrder = function (data) {
     }
 
     var cmyk = convertHexToCMYK(data[i]["HEXCOLOR"]);
-    queryMessage += ", ( " + data[i]["O_NR"] + "," + data[i]["OI_NR"] + ",'" + data[i]["PO_CODE"] + "'," + data[i]["PO_COUNTER"] + ", '" + data[i]["CUSTOMER_TYPE"] + "'," + data[i]["QUANTITY"] + ", 0, 0," + cmyk["C"] + "," + cmyk["M"] + "," + cmyk["Y"] + "," + cmyk["K"] + "," + deltaEBerechnen(data[i]["HEXCOLOR"]) + ",'" + data[i]["HEXCOLOR"] + "'," + declarePrioOfOrder(data[i]) + ",'" + data[i]["IMAGE"] + "','" + data[i]["O_DATE"] + "'," + (newProdNum + i) + ")";
+    queryMessage += ", ( " + data[i]["O_NR"] + "," + data[i]["OI_NR"] + ",'" + data[i]["PO_CODE"] + "'," + data[i]["PO_COUNTER"] + ", '" + data[i]["CUSTOMER_TYPE"] + "'," + data[i]["QUANTITY"] + ", 0, 0," + cmyk["C"] + "," + cmyk["M"] + "," + cmyk["Y"] + "," + cmyk["K"] + "," + deltaEBerechnen(data[i]["HEXCOLOR"]) + ",'" + data[i]["HEXCOLOR"].toLowerCase() + "'," + declarePrioOfOrder(data[i]) + ",'" + data[i]["IMAGE"] + "','" + data[i]["O_DATE"] + "'," + (newProdNum + i) + ")";
   }
   return (queryMessage);
 }
